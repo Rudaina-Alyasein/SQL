@@ -1,0 +1,18 @@
+Create Database Library;
+Create table Books(BookID int identity ,Title  varchar(50) not null,AuthorID  int  ,PublishedYear  Date,CopiesAvailable  int , BookCategory varchar(50) ,  PRIMARY KEY (BookID ), 
+    );
+	select * from Books;
+	Create Table Authors (AuthorID int identity primary key,FirstName varchar(50) ,LastName  varchar(50) ,BirthYear Date);
+	insert into Books (Title,AuthorID ,PublishedYear,CopiesAvailable,BookCategory)values('C#',1,'2008-11-11',3,'IT'),('C++',2,'2008-11-11',2,'IT'),('Data Structure',3,'2008-11-11',1,'IT'),('OOP',4,'2008-11-11',1,'IT'),('JS',5,'2008-11-11',3,'IT');
+	SELECT  * from Books;
+	insert into Authors(FirstName,LastName,BirthYear) values ('john','smith','2001-3-16'),('mohd','smith','2000-3-16'),('khan','smith','1990-3-22'),('sara','saleh','2001-3-16'),('Ahmad','khan','2001-3-16'),('Rahaf','smith','1998-3-16');
+	SELECT  * from Authors;
+	select MAX(CopiesAvailable) as MaxCopies from Books;
+	select Min(CopiesAvailable) as MinCopies from Books;
+	select AVG(YEAR(PublishedYear)) as publicationYear from Books;
+	select count(BookID)  as TotalBooksCount from Books 
+	Truncate Table Books;
+	select * from Books;
+	alter table Authors add  Email varchar(50) , Phone_Number varchar(50);
+	select * from Authors;
+	Drop table Authors;
