@@ -5,7 +5,10 @@ Create table Members (ID int identity primary key,Name varchar(50) not null,Cont
 create table borrowing (ID int identity primary key,MemberID int,BookID int ,BorrowingDate Date not null ,dueDate date not null,returnDate date , foreign key (MemberID) references Members(ID), foreign key (BookID)  references Books(ID)  );
 create table Reservations (ID int identity primary key, MemberID int foreign KEY (MemberID) references Members(ID),BookID int foreign KEY (BookID) references Books(ID)  ,ReservationDate date not null ,Status varchar(50) not null);
 Create table LibraryStaff (ID int identity primary key,Name varchar(50) not null, ConactInfo varchar (50) not null ,AssignedSection varchar(50),EmploymentDate date not null);
-Create table FinancialFines(ID int identity primary key,MemberID int ,Amount int not null,PaymentStatus nvarchar not null ,foreign key(MemberID) references Members (ID));
+Create table FinancialFines(ID int identity primary key,MemberID int ,Amount int not null,PaymentStatus nvarchar not null ,foreign key(MemberID) references Members (ID)); 
+
+
+
 -- Inserting records into Categories
 INSERT INTO Categories (Name, Description)
 VALUES 
@@ -27,11 +30,11 @@ VALUES
 -- Inserting records into Members
 INSERT INTO Members (Name, ContactInformation, MembershipType, RegistraionDate)
 VALUES 
-('John Doe', 'john.doe@example.com', 'Regular', '2024-02-01'),
-('Jane Smith', 'jane.smith@example.com', 'Premium', '2024-01-15'),
-('Mark Johnson', 'mark.johnson@example.com', 'Regular', '2023-12-20'),
-('Lucy Williams', 'lucy.williams@example.com', 'Premium', '2024-01-05'),
-('Michael Brown', 'michael.brown@example.com', 'Regular', '2023-11-18');
+('John Doe', '07789977662', 'Regular', '2024-02-01'),
+('Jane Smith', '07789977662', 'Premium', '2024-01-15'),
+('Mark Johnson', '07789977662', 'Regular', '2023-12-20'),
+('Lucy Williams', '07789977662', 'Premium', '2024-01-05'),
+('Michael Brown', '07789977662', 'Regular', '2023-11-18');
 
 -- Inserting records into Borrowing
 INSERT INTO borrowing (MemberID, BookID, BorrowingDate, dueDate, returnDate)
@@ -41,6 +44,9 @@ VALUES
 (3, 3, '2023-12-25', '2024-01-08', '2024-01-07'),
 (4, 4, '2024-01-10', '2024-01-24', NULL),
 (5, 5, '2023-11-22', '2023-12-06', '2023-12-04');
+INSERT INTO borrowing (MemberID, BookID, BorrowingDate, dueDate, returnDate)
+VALUES 
+(2, 1, '2024-02-05', '2024-02-19', '2024-02-17');
 
 -- Inserting records into Reservations
 INSERT INTO Reservations (MemberID, BookID, ReservationDate, Status)
@@ -50,75 +56,88 @@ VALUES
 (3, 5, '2024-02-01', 'Pending'),
 (4, 1, '2024-01-15', 'Completed'),
 (5, 2, '2024-02-08', 'Pending');
+INSERT INTO Reservations (MemberID, BookID, ReservationDate, Status)
+VALUES (5, 3, '2024-02-08', 'Canceled');
+
 --Q1
-select * from members;
+
 select * from members where RegistraionDate='2024-02-01';
 --Q2
-select * from books;
+
 select * from books where Title='Dune' ;
 --Q3
 alter table members add Email varchar(50) null;
 select * from members;
 --Q4
-insert into members (Name,ContactInformation,MembershipType,RegistraionDate,Email) values ('Rudaina','9876543210',' Student','2024-03-09','Rudainaalomari@gmail.com');
-insert into members (Name,ContactInformation,MembershipType,RegistraionDate,Email) values ('Omar','Rudainaalomari@gmail.com','Regular','5-6-2024','Omar@gmail.com');
+insert into members (Name,ContactInformation,MembershipType,RegistraionDate,Email) values ('Omar',' 9876543210','Student','5-6-2024','Omar@gmail.com');
 
 select * from members;
 --Q5
 select * from Reservations;
-select * from members join Reservations on MemberID=Reservations.ID;
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Reservations r ON m.ID = r.MemberID;
 --Q6
-select * from books ;
-select * from members ;
-select * from members join borrowing on MemberID=borrowing.ID 
-join books on BookID=members.ID;
+select * from members;
+select * from books;
+select * from borrowing;
+
+
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Borrowing b ON m.ID = b.MemberID
+JOIN Books bo ON b.BookID = bo.ID
+WHERE bo.Title = 'Dune';
+
 --Q7
-select *from borrowing;
-select*from books;
-select *from Reservations;
-select * from  members  join Reservations on Members.ID=MemberID  
-join books on BookID=books.ID where Title='Dune' and  Status='Completed';
+
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Borrowing b ON m.ID = b.MemberID
+JOIN Books bo ON b.BookID = bo.ID
+WHERE bo.Title = 'The Great Gatsby' AND b.returnDate IS NOT NULL;
+
 --Q8
-select * from members join borrowing on members.ID=MemberID
-join Books on BookID=Books.ID where returnDate>dueDate;
+
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Borrowing b ON m.ID = b.MemberID
+WHERE b.returnDate > b.dueDate;
+
 --Q9
-select *from borrowing;
-select*from books;
+SELECT bo.Title, COUNT(b.ID) AS BorrowCount
+FROM Borrowing b
+JOIN Books bo ON b.BookID = bo.ID
+GROUP BY bo.Title
+HAVING COUNT(b.ID) > 3;
+
 --Q10
 select * from members join Borrowing on  MemberID=members.ID  where BorrowingDate Between ('2024-01-10') and ('2024-01-18');
 --Q11
-select Count (ID) as countBooks from books;
+SELECT COUNT(*) AS TotalAvailableBooks
+FROM Books
+WHERE AvailabilityStatus = 'Available';
 --Q12
-select * from members;
-select * from Borrowing;
-
-select Name from Members join borrowing on MemberID=members.ID
-where returnDate=Null;
-
-
-
-
-
-
-
-
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Borrowing b ON m.ID = b.MemberID
+WHERE b.returnDate IS NULL;
+--Q13
+SELECT DISTINCT m.*
+FROM Members m
+JOIN Borrowing b ON m.ID = b.MemberID
+JOIN Books bo ON b.BookID = bo.ID
+JOIN Categories c ON bo.CategoryID = c.ID
+WHERE c.Name = 'Science Fiction';
 
 
--- Inserting records into LibraryStaff
-INSERT INTO LibraryStaff (Name, ConactInfo, AssignedSection, EmploymentDate)
-VALUES 
-('Alice Green', 'alice.green@library.com', 'Science Fiction', '2023-07-01'),
-('Bob White', 'bob.white@library.com', 'Mystery', '2022-11-12'),
-('Carol Black', 'carol.black@library.com', 'Fiction', '2021-09-18'),
-('David Blue', 'david.blue@library.com', 'Romance', '2024-02-01'),
-('Eva Yellow', 'eva.yellow@library.com', 'Biography', '2023-10-10');
 
--- Inserting records into FinancialFines
-INSERT INTO FinancialFines (MemberID, Amount, PaymentStatus)
-VALUES 
-(1, 20, 'Unpaid'),
-(2, 15, 'Paid'),
-(3, 25, 'Unpaid'),
-(4, 10, 'Paid'),
-(5, 30, 'Unpaid');
+
+
+
+
+
+
+
+
 
